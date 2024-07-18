@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Resize Images</title>
+</head>
+
+
+
+<script>
+    function download2() {
+        document.getElementById("downloader").download = imageName + ".png";
+        document.getElementById("downloader").href = document.getElementById("canva").toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+    }
+</script>
+
+<body class="flex flex-col gap-5 justify-center items-center w-full h-full">
+    <h1 class="font-bold text-6xl">Image resizer</h1>
+    <input type="file" id="imageInput" accept="image/*" />
+    <canvas id="canva" style="background-color: transparent;" class="border border-2 border-black"></canvas>
+    <span id="sizes" class="text-black"></span>
+    <a href="#" id="downloader" onclick="download2()" download="image.png"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Download!</a>
+
+
+
+</body>
+<script>
+
+    var canvas = document.getElementById('canva');
+    var sizes = document.getElementById('sizes');
+    var ctx = canvas.getContext('2d');
+    let imageName = ""
+    document.getElementById('imageInput').addEventListener('change', function (event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var img = new Image();
+
+            imageName = file.name.split(".")[0]
+            img.onload = function () {
+                let xOffset = 0, yOffset = 0;
+                if (img.width != img.height) {
+                    if (img.width > img.height) {
+                        yOffset = (img.width - img.height);
+
+                    } else {
+                        xOffset = (img.height - img.width);
+                    }
+                }
+                console.log({ yOffset, xOffset })
+                canvas.width = img.width + xOffset;
+                canvas.height = img.height + yOffset;
+                ctx.drawImage(img, xOffset / 2, yOffset / 2, img.width, img.height);
+                sizes.innerText = "Original size: " + img.width + "x" + img.height + "\n Offset x: " + xOffset + " Offset y: " + yOffset;
+            }
+            img.src = e.target.result;
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    });
+
+</script>
+
+</html>
